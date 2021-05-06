@@ -16,7 +16,7 @@ public class Player {
 	private int xPos = 400, yPos = 700, width = 100, height = 100, speed = 7;
 	private int maxHealth = 100, health = maxHealth;
 	// nicht kleiner als 100
-	private int fireCooldownMillis = 500;
+	private int fireCooldownMillis = 250;
 	private long lastShotTimestamp = System.currentTimeMillis();
 	private ArrayList<Schuss> schussList = new ArrayList<Schuss>();
 

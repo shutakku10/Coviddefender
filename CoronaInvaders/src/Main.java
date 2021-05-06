@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -16,6 +17,10 @@ public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
 	Player player = new Player();
 	ArrayList<Enemy> gegner = new ArrayList<Enemy>();
+	
+	Long startTime;
+	Long elapsedTime;
+	
 	boolean rechts = false;
 	boolean links = false;
 	boolean fire = false;
@@ -49,12 +54,7 @@ public class Main extends JPanel implements KeyListener {
 		setBackground(Color.white);
 
 		// Enemy erstellung
-		for (int i = 0; i < 10; i++) {
-			int xPos = rnd.nextInt(FRAME_WIDTH - Enemy.ENEMY_WIDTH);
-			int yPos = rnd.nextInt(FRAME_HEIGHT / 4 - Enemy.ENEMY_HEIGHT) + Enemy.ENEMY_HEIGHT;
-
-			gegner.add(new Enemy(xPos, yPos));
-		}
+		createEnemies(10);
 
 	} // end of public Main
 
@@ -72,9 +72,14 @@ public class Main extends JPanel implements KeyListener {
 
 		if (fire)
 			player.fire();
-		for (Enemy enemy : gegner)
+		for (Enemy enemy : gegner) 
 			enemy.moveEnemy();
-
+		//Time since last enemy creation
+		elapsedTime = new Date().getTime() - startTime;
+		if(elapsedTime > 10*1000) { //if it's been 30 seconds
+			createEnemies(10);
+		}
+		
 		player.update();
 		repaint();
 
@@ -93,6 +98,17 @@ public class Main extends JPanel implements KeyListener {
 			enemy.renderChar(g2d);
 	}
 
+	public void createEnemies(int numberOfEnemies) {
+		for (int i = 0; i < numberOfEnemies; i++) {
+			int xPos = rnd.nextInt(FRAME_WIDTH - Enemy.ENEMY_WIDTH);
+			int yPos = rnd.nextInt(FRAME_HEIGHT / 4 - Enemy.ENEMY_HEIGHT) + Enemy.ENEMY_HEIGHT;
+
+			gegner.add(new Enemy(xPos, yPos));
+		}
+		//Time when last enemies created
+		startTime = System.currentTimeMillis();
+	}
+	
 	class Loop implements Runnable {
 		long timestamp = 0;
 		long oldTimestamp = 0;

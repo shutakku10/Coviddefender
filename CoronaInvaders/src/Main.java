@@ -49,8 +49,8 @@ public class Main extends JPanel implements KeyListener {
 		
 		//Enemy erstellung
 		for(int i = 0; i < enemy.length; i++) {
-			int xPos = rnd.nextInt(FRAME_WIDTH);
-			int yPos = rnd.nextInt(FRAME_HEIGHT/2);
+			int xPos = rnd.nextInt(FRAME_WIDTH-Enemy.ENEMY_WIDTH);
+			int yPos = rnd.nextInt(FRAME_HEIGHT/4-Enemy.ENEMY_HEIGHT)+Enemy.ENEMY_HEIGHT;
 			
 			enemy[i] = new Enemy(xPos, yPos);
 		}

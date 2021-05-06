@@ -15,8 +15,8 @@ public class Enemy {
 	
 	private Image img;
 	private int xPos, yPos;
-	private int width = 50;
-	private int height = 50;
+	public static final int ENEMY_WIDTH = 50;
+	public static final int ENEMY_HEIGHT = 50;
 	private int speed = 1;
 	private Point[] hitbox = new Point[8];
 	
@@ -26,7 +26,7 @@ public class Enemy {
 	public Enemy(int pXPos, int pYPos) {
 		try {
 			img = ImageIO.read(new File("res/virus.png"));
-			img = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+			img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,9 +43,12 @@ public class Enemy {
 	
 	public void moveEnemy() {
 		yPos += speed;
-		if(rnd.nextInt(2) == 0)
-			xPos += speed*4;
-		else
-			xPos -= speed*4;
+		if(rnd.nextInt(2) == 0) {
+			if (xPos + ENEMY_WIDTH - 25 < Main.FRAME_WIDTH)	
+				xPos += speed*4;
+		}else {
+			if (xPos > 0)
+				xPos -= speed*4;
+		}
 	}
 }

@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,7 +23,7 @@ public class Player {
 	public Player(Main pMain) {
 		main = pMain;
 		try {
-			img = ImageIO.read(new File("res/doc.png"));
+			img = ImageIO.read(getClass().getResource("images/doc.png"));
 			img = img.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();

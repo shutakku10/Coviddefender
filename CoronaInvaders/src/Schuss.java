@@ -3,7 +3,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -17,7 +16,7 @@ public class Schuss {
 
 	public Schuss(int pXpos) {
 		try {
-			img = ImageIO.read(new File("res/syringe.png"));
+			img = ImageIO.read(getClass().getResource("images/syringe.png"));
 			img = img.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -28,11 +27,13 @@ public class Schuss {
 	public Enemy checkForHits(ArrayList<Enemy> pGegnerList) {
 		Enemy hitEnemy = null;
 		for (Enemy enemy : pGegnerList) {
-			if (xPos < enemy.getXpos() + Enemy.ENEMY_WIDTH && xPos + width > enemy.getXpos()) {
-				if (yPos < enemy.getYpos() + Enemy.ENEMY_HEIGHT && yPos + height > enemy.getYpos()) {
-					System.out.println("Hit");
-					enemy.getHit(damage);
-					damage = 0;
+			if (enemy.getHealth() > 0) {
+				if (xPos < enemy.getXpos() + Enemy.ENEMY_WIDTH && xPos + width > enemy.getXpos()) {
+					if (yPos < enemy.getYpos() + Enemy.ENEMY_HEIGHT && yPos + height > enemy.getYpos()) {
+						System.out.println("Hit");
+						enemy.getHit(damage);
+						damage = 0;
+					}
 				}
 			}
 		}

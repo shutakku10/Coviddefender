@@ -1,20 +1,26 @@
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-
-import com.sun.xml.internal.ws.org.objectweb.asm.Label;
 
 public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
@@ -25,7 +31,7 @@ public class Main extends JPanel implements KeyListener {
 	private Long elapsedTime;
 	private int killScore = 0;
 	private JLabel scoreLabel = new JLabel();
-	
+
 	boolean rechts = false;
 	boolean links = false;
 	boolean fire = false;
@@ -35,6 +41,7 @@ public class Main extends JPanel implements KeyListener {
 	private Loop loop = new Loop();
 	private Thread t = new Thread(loop);
 	private JFrame fenster;
+	private JFrame gameOverScreen;
 
 	private Random rnd = new Random();
 	public static boolean gameOver = false;
@@ -87,8 +94,10 @@ public class Main extends JPanel implements KeyListener {
 
 		for (Enemy enemy : gegner) {
 			enemy.moveEnemy();
-			if (enemy.untenAngekommen())
+			if (enemy.untenAngekommen()) {
 				player.getDamaged(enemy.getDamage());
+				killScore--;
+			}
 		}
 
 		// Time since last enemy creation
@@ -103,22 +112,34 @@ public class Main extends JPanel implements KeyListener {
 
 		player.update();
 		for (int i = 0; i < gegner.size(); i++) {
-			if (gegner.get(i).getHealth() <= 0) {
-				gegner.remove(i);
+			if (gegner.get(i).isDead()) {
 				killScore++;
-				System.out.println("Score: "+killScore);
+				System.out.println("Score: " + killScore);
 				scoreLabel.setText(String.valueOf(killScore));
+				gegner.remove(i);
 			}
 		}
 
-		if(killScore%25 == 0) {
-			createBoss(killScore/25);
+		if (killScore % 25 == 0) {
+			createBoss(killScore / 25);
 			killScore++;
 		}
-		
+
 		if (gameOver) {
-			// game over screen
-			System.out.println("Game over!");
+			gameOver = false;
+			gegner = new ArrayList<Enemy>();
+			startTime = System.currentTimeMillis();
+			killScore = 0;
+			scoreLabel = new JLabel();
+			rechts = false;
+			links = false;
+			fire = false;
+			loop = new Loop();
+			t = new Thread(loop);
+			rnd = new Random();
+			player = new Player(this);
+			gameOverScreen = new GameOverScreen();
+			fenster.dispose();
 		}
 		repaint();
 	}
@@ -145,12 +166,12 @@ public class Main extends JPanel implements KeyListener {
 		// Time when last enemies created
 		startTime = System.currentTimeMillis();
 	}
-	
+
 	public void createBoss(int numberOfBosses) {
-		for(int i = 0; i < numberOfBosses; i++) {
+		for (int i = 0; i < numberOfBosses; i++) {
 			int xPos = rnd.nextInt(FRAME_WIDTH - Enemy.ENEMY_WIDTH);
 			int yPos = 100;
-			
+
 			gegner.add(new Enemy(xPos, yPos, true));
 		}
 	}
@@ -208,4 +229,67 @@ public class Main extends JPanel implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 	}
+
+	public class GameOverScreen extends JFrame {
+		public GameOverScreen() {
+			super();
+
+			setSize(400, 400);
+			Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+			int x = (d.width - getSize().width) / 2;
+			int y = (d.height - getSize().height) / 2;
+			setLocation(x, y);
+			setResizable(false);
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			getContentPane().setLayout(new BorderLayout(0, 0));
+
+			JPanel panel = new JPanel();
+			panel.setBorder(UIManager.getBorder("InternalFrame.border"));
+			getContentPane().add(panel, BorderLayout.SOUTH);
+			panel.setLayout(new GridLayout(0, 2, 0, 0));
+
+			JButton btnNewButton = new JButton("Main Menu");
+			btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			btnNewButton.setBackground(Color.BLACK);
+			btnNewButton.setForeground(Color.BLACK);
+			btnNewButton.setSize(100, 100);
+			panel.add(btnNewButton);
+
+			JButton btRetry = new JButton("Retry");
+			btRetry.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			btRetry.setBackground(Color.BLACK);
+			btRetry.setForeground(Color.WHITE);
+			panel.add(btRetry);
+			btRetry.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					new Main();
+					dispose();
+				}
+			});
+
+			JLabel lblNewLabel = new JLabel("Score");
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lblNewLabel.setForeground(Color.BLACK);
+			lblNewLabel.setBackground(Color.BLACK);
+			lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			getContentPane().add(lblNewLabel, BorderLayout.NORTH);
+
+			JPanel panel_1 = new JPanel();
+			panel_1.setBackground(Color.LIGHT_GRAY);
+			panel_1.setForeground(Color.RED);
+			getContentPane().add(panel_1, BorderLayout.CENTER);
+			panel_1.setLayout(new CardLayout(0, 0));
+
+			JLabel lblNewLabel_1 = new JLabel("You died!");
+			lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 50));
+			lblNewLabel_1.setForeground(Color.RED);
+			lblNewLabel_1.setBackground(Color.LIGHT_GRAY);
+			lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+			panel_1.add(lblNewLabel_1, "name_21169377146200");
+			setVisible(true);
+		}
+
+	}
+
 } // end of class Main

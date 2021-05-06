@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -15,6 +14,8 @@ public class Enemy {
 
 	private Random rnd = new Random();
 	private Image img;
+	private Image dead1img;
+	private Image dead2img;
 	private int xPos, yPos;
 	public static final int ENEMY_WIDTH = 50;
 	public static final int ENEMY_HEIGHT = 50;
@@ -23,47 +24,60 @@ public class Enemy {
 	private int speedX = 1;
 	private int speedY = 1;
 	private int maxHealth = 1, health = maxHealth;
-	private int damage = 10;
-	
+	private int damage = 5;
+	private long deadTimestamp = 0;
+	private boolean dead = false;
+
 	private boolean bossEnemy;
 
 	public Enemy(int pXPos, int pYPos, boolean pBossEnemy) {
 		this.bossEnemy = pBossEnemy;
-		if(!bossEnemy) {
+
+		if (!bossEnemy) {
 			try {
-				img = ImageIO.read(new File("res/virus.png"));
+				img = ImageIO.read(getClass().getResource("images/virus.png"));
 				img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
+
+				dead1img = ImageIO.read(getClass().getResource("images/virusTod2.png"));
+				dead1img = dead1img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
+
+				dead2img = ImageIO.read(getClass().getResource("images/virusTod3.png"));
+				dead2img = dead2img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else {
 			maxHealth = 30;
-			damage = 999;
+			damage = 35;
 			speedX = 2;
-			
 			health = maxHealth;
 			try {
-				img = ImageIO.read(new File("res/bossvirus.png"));
+				img = ImageIO.read(getClass().getResource("images/bossvirus.png"));
 				img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
+
 		xPos = pXPos;
 		yPos = pYPos;
 
 		if (rnd.nextBoolean())
 			speedX *= -1;
 	}
-	
+
+	public boolean isDead() {
+		return dead;
+	}
+
 	public Point getLocation() {
 		return new Point(xPos, yPos);
 	}
 
 	public boolean untenAngekommen() {
 		if (yPos + ENEMY_HEIGHT >= Main.FRAME_HEIGHT) {
-			health = 0;
+			dead = true;
 			return true;
 		} else
 			return false;
@@ -87,15 +101,28 @@ public class Enemy {
 
 	public void getHit(int pDamage) {
 		health -= pDamage;
+		if (health <= 0)
+			deadTimestamp = System.currentTimeMillis();
 	}
 
 	public void renderChar(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		if (deadTimestamp > 0) {
+			long deadTime = System.currentTimeMillis() - deadTimestamp;
+			if (deadTime < 250) {
+				img = dead1img;
+			} else if (deadTime < 500) {
+				img = dead2img;
+			} else {
+				dead = true;
+			}
+		}
+
 		g2d.drawImage(img, xPos, yPos, null);
-		
-		if(bossEnemy) {
-			
+		if (bossEnemy) {
+
 			BasicStroke stroke = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 			g2d.setStroke(stroke);
 			g2d.setColor(Color.black);
@@ -129,18 +156,9 @@ public class Enemy {
 			speedX *= -1;
 		}
 
-		xPos += speedX;
-		yPos += speedY;
-	}
-
-	public void moveEnemyErik() {
-		yPos += speedY;
-		if (rnd.nextInt(2) == 0) {
-			if (xPos + ENEMY_WIDTH - 25 < Main.FRAME_WIDTH)
-				xPos += speedX * 4;
-		} else {
-			if (xPos > 0)
-				xPos -= speedX * 4;
+		if (health > 0) {
+			xPos += speedX;
+			yPos += speedY;
 		}
 	}
 }

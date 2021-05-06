@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -21,6 +22,15 @@ public class Schuss {
 			e.printStackTrace();
 		}
 		xPos = pXpos;
+	}
+
+	public Enemy hitEnemyInList(ArrayList<Enemy> pGegnerList) {
+		Enemy hitEnemy = null;
+		for (Enemy enemy : pGegnerList) {
+
+		}
+
+		return hitEnemy;
 	}
 
 	public int getSpeed() {

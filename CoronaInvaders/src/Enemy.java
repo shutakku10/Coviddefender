@@ -23,21 +23,33 @@ public class Enemy {
 	private int health = 1;
 	private int damage = 10;
 
-	public Enemy(int pXPos, int pYPos) {
-		try {
-			img = ImageIO.read(new File("res/virus.png"));
-			img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
-		} catch (IOException e) {
-			e.printStackTrace();
+	public Enemy(int pXPos, int pYPos, boolean bossEnemy) {
+		if(!bossEnemy) {
+			try {
+				img = ImageIO.read(new File("res/virus.png"));
+				img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			health = 30;
+			damage = 999;
+			speedX = 2;
+			try {
+				img = ImageIO.read(new File("res/bossvirus.png"));
+				img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
-
 		xPos = pXPos;
 		yPos = pYPos;
 
 		if (rnd.nextBoolean())
 			speedX *= -1;
 	}
-
+	
 	public Point getLocation() {
 		return new Point(xPos, yPos);
 	}

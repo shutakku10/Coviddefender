@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -9,8 +10,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Label;
 
 public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
@@ -19,7 +23,9 @@ public class Main extends JPanel implements KeyListener {
 
 	private Long startTime = System.currentTimeMillis();
 	private Long elapsedTime;
-
+	private int killScore = 0;
+	private JLabel scoreLabel = new JLabel();
+	
 	boolean rechts = false;
 	boolean links = false;
 	boolean fire = false;
@@ -46,10 +52,14 @@ public class Main extends JPanel implements KeyListener {
 		fenster.setLocation(x, y);
 		fenster.setResizable(false);
 		// Anfang Komponenten
+		scoreLabel.setText(String.valueOf(killScore));
+		scoreLabel.setFont(new Font("Serif", Font.BOLD, 35));
+		scoreLabel.setForeground(Color.RED);
 		fenster.addKeyListener(this);
 		fenster.setVisible(true);
+		this.add(scoreLabel);
 		fenster.add(this);
-		setBackground(Color.white);
+		setBackground(Color.LIGHT_GRAY);
 
 		// Enemy erstellung
 		createEnemies(10);
@@ -87,21 +97,29 @@ public class Main extends JPanel implements KeyListener {
 		if (gegner.size() == 0)
 			createEnemies(10);
 
-		if (elapsedTime > 10 * 1000) { // if it's been 30 seconds
+		if (elapsedTime > 10 * 1000) {
 			createEnemies(10);
 		}
 
 		player.update();
 		for (int i = 0; i < gegner.size(); i++) {
-			if (gegner.get(i).getHealth() <= 0)
+			if (gegner.get(i).getHealth() <= 0) {
 				gegner.remove(i);
+				killScore++;
+				System.out.println("Score: "+killScore);
+				scoreLabel.setText(String.valueOf(killScore));
+			}
 		}
 
+		if(killScore%25 == 0) {
+			createBoss(killScore/25);
+			killScore++;
+		}
+		
 		if (gameOver) {
 			// game over screen
 			System.out.println("Game over!");
 		}
-
 		repaint();
 	}
 
@@ -122,10 +140,19 @@ public class Main extends JPanel implements KeyListener {
 			int xPos = rnd.nextInt(FRAME_WIDTH - Enemy.ENEMY_WIDTH);
 			int yPos = rnd.nextInt(FRAME_HEIGHT / 4 - Enemy.ENEMY_HEIGHT) + Enemy.ENEMY_HEIGHT;
 
-			gegner.add(new Enemy(xPos, yPos));
+			gegner.add(new Enemy(xPos, yPos, false));
 		}
 		// Time when last enemies created
 		startTime = System.currentTimeMillis();
+	}
+	
+	public void createBoss(int numberOfBosses) {
+		for(int i = 0; i < numberOfBosses; i++) {
+			int xPos = rnd.nextInt(FRAME_WIDTH - Enemy.ENEMY_WIDTH);
+			int yPos = 100;
+			
+			gegner.add(new Enemy(xPos, yPos, true));
+		}
 	}
 
 	class Loop implements Runnable {

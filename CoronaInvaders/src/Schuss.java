@@ -18,6 +18,7 @@ public class Schuss {
 	public Schuss(int pXpos) {
 		try {
 			img = ImageIO.read(new File("res/syringe.png"));
+			img = img.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -12,17 +12,15 @@ import javax.imageio.ImageIO;
 public class Enemy {
 
 	private Random rnd = new Random();
-	
+
 	private Image img;
 	private int xPos, yPos;
 	public static final int ENEMY_WIDTH = 50;
 	public static final int ENEMY_HEIGHT = 50;
 	private int speed = 1;
-	private Point[] hitbox = new Point[8];
-	
-	private int health;
+	private int health = 1;
 	private int damage;
-	
+
 	public Enemy(int pXPos, int pYPos) {
 		try {
 			img = ImageIO.read(new File("res/virus.png"));
@@ -30,25 +28,45 @@ public class Enemy {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		xPos = pXPos;
 		yPos = pYPos;
 	}
-	
+
+	public Point getLocation() {
+		return new Point(xPos, yPos);
+	}
+
+	public int getXpos() {
+		return xPos;
+	}
+
+	public int getYpos() {
+		return yPos;
+	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void getHit(int pDamage) {
+		health -= pDamage;
+	}
+
 	public void renderChar(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.drawImage(img, xPos, yPos, null);
 	}
-	
+
 	public void moveEnemy() {
 		yPos += speed;
-		if(rnd.nextInt(2) == 0) {
-			if (xPos + ENEMY_WIDTH - 25 < Main.FRAME_WIDTH)	
-				xPos += speed*4;
-		}else {
+		if (rnd.nextInt(2) == 0) {
+			if (xPos + ENEMY_WIDTH - 25 < Main.FRAME_WIDTH)
+				xPos += speed * 4;
+		} else {
 			if (xPos > 0)
-				xPos -= speed*4;
+				xPos -= speed * 4;
 		}
 	}
 }

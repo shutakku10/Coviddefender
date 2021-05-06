@@ -24,10 +24,16 @@ public class Schuss {
 		xPos = pXpos;
 	}
 
-	public Enemy hitEnemyInList(ArrayList<Enemy> pGegnerList) {
+	public Enemy checkForHits(ArrayList<Enemy> pGegnerList) {
 		Enemy hitEnemy = null;
 		for (Enemy enemy : pGegnerList) {
-
+			if (xPos < enemy.getXpos() + Enemy.ENEMY_WIDTH && xPos + width > enemy.getXpos()) {
+				if (yPos < enemy.getYpos() + Enemy.ENEMY_HEIGHT && yPos + height > enemy.getYpos()) {
+					System.out.println("Hit");
+					enemy.getHit(damage);
+					damage = 0;
+				}
+			}
 		}
 
 		return hitEnemy;

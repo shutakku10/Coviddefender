@@ -15,7 +15,7 @@ import javax.swing.WindowConstants;
 
 public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
-	Player player = new Player();
+	Player player = new Player(this);
 	ArrayList<Enemy> gegner = new ArrayList<Enemy>();
 	
 	Long startTime;
@@ -63,6 +63,10 @@ public class Main extends JPanel implements KeyListener {
 	public static void main(String[] args) {
 		new Main();
 	} // end of main
+
+	public ArrayList<Enemy> getGegnerList() {
+		return gegner;
+	}
 
 	public void update() {
 		if (rechts)

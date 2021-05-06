@@ -19,8 +19,10 @@ public class Player {
 	private int fireCooldownMillis = 250;
 	private long lastShotTimestamp = System.currentTimeMillis();
 	private ArrayList<Schuss> schussList = new ArrayList<Schuss>();
+	private Main main;
 
-	public Player() {
+	public Player(Main pMain) {
+		main = pMain;
 		try {
 			img = ImageIO.read(new File("res/doc.png"));
 		} catch (IOException e) {
@@ -50,8 +52,11 @@ public class Player {
 	}
 
 	public void update() {
+		for (Schuss schuss : schussList) {
+			schuss.checkForHits(main.getGegnerList());
+		}
 		for (int i = 0; i < schussList.size(); i++) {
-			if (schussList.get(i).getYpos() <= -100)
+			if (schussList.get(i).getYpos() <= -100 || schussList.get(i).getDamage() == 0)
 				schussList.remove(i);
 		}
 	}
@@ -100,7 +105,7 @@ public class Player {
 		Main.gameOver = true;
 	}
 
-	public void getDamage(int pAmount) {
+	public void getDamaged(int pAmount) {
 		health -= pAmount;
 		if (health <= 0)
 			die();

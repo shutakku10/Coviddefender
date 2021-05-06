@@ -17,7 +17,7 @@ public class Enemy {
 	private int xPos, yPos;
 	private int width = 50;
 	private int height = 50;
-	private int speed = 5;
+	private int speed = 1;
 	private Point[] hitbox = new Point[8];
 	
 	private int health;
@@ -43,9 +43,9 @@ public class Enemy {
 	
 	public void moveEnemy() {
 		yPos += speed;
-		if(rnd.nextInt(1) == 0)
-			xPos += speed*2;
+		if(rnd.nextInt(2) == 0)
+			xPos += speed*4;
 		else
-			xPos -= speed*2;
+			xPos -= speed*4;
 	}
 }

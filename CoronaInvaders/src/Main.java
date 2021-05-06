@@ -14,10 +14,11 @@ import javax.swing.WindowConstants;
 public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
 	Player player = new Player();
-//	Enemy enemy1 = new Enemy(250, 200);
-	Enemy[] enemy = new Enemy[9];
+//	gegner gegner1 = new gegner(250, 200);
+	Enemy[] gegner = new Enemy[9];
 	boolean rechts = false;
 	boolean links = false;
+	boolean fire = false;
 
 	public static final int FRAME_HEIGHT = 800;
 	public static final int FRAME_WIDTH = 800;
@@ -26,7 +27,8 @@ public class Main extends JPanel implements KeyListener {
 	private JFrame fenster;
 
 	private Random rnd = new Random();
-	
+	public static boolean gameOver = false;
+
 	// Ende Attribute
 	public Main() {
 		// Frame-Initialisierung
@@ -38,7 +40,6 @@ public class Main extends JPanel implements KeyListener {
 		int x = (d.width - fenster.getSize().width) / 2;
 		int y = (d.height - fenster.getSize().height) / 2;
 		fenster.setLocation(x, y);
-		fenster.setTitle("Brick Breaker");
 		fenster.setResizable(false);
 		// Anfang Komponenten
 		fenster.addKeyListener(this);
@@ -46,15 +47,15 @@ public class Main extends JPanel implements KeyListener {
 		fenster.add(this);
 		t.start();
 		setBackground(Color.white);
-		
-		//Enemy erstellung
-		for(int i = 0; i < enemy.length; i++) {
-			int xPos = rnd.nextInt(FRAME_WIDTH);
-			int yPos = rnd.nextInt(FRAME_HEIGHT/2);
-			
-			enemy[i] = new Enemy(xPos, yPos);
-		}
-		
+
+//		// gegner erstellung
+//		for (int i = 0; i < gegner.length; i++) {
+//			int xPos = rnd.nextInt(FRAME_WIDTH);
+//			int yPos = rnd.nextInt(FRAME_HEIGHT / 2);
+//
+//			gegner[i] = new gegner(xPos, yPos);
+//		}
+
 	} // end of public Main
 
 	// Anfang Methoden
@@ -66,11 +67,21 @@ public class Main extends JPanel implements KeyListener {
 	public void update() {
 		if (rechts)
 			player.move("Rechts");
-		else if (links) {
+		else if (links)
 			player.move("Links");
-		}
-		for(int i = 0; i < enemy.length; i++) enemy[i].moveEnemy();
+
+		if (fire)
+			player.fire();
+//		for (Enemy enemy : gegner)
+//			enemy.moveEnemy();
+
+		player.update();
 		repaint();
+
+		if (gameOver) {
+			// game over screen
+			System.out.println("Game over!");
+		}
 	}
 
 	@Override
@@ -78,7 +89,9 @@ public class Main extends JPanel implements KeyListener {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		player.renderChar(g2d);
-		for(int i = 0; i < enemy.length; i++) enemy[i].renderChar(g2d);
+//		for (Enemy enemy : gegner)
+//			enemy.renderChar(g2d);
+
 	}
 
 	class Loop implements Runnable {
@@ -113,6 +126,9 @@ public class Main extends JPanel implements KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			rechts = true;
 		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_J) {
+			fire = true;
+		}
 	}
 
 	@Override
@@ -122,6 +138,9 @@ public class Main extends JPanel implements KeyListener {
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			rechts = false;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_J) {
+			fire = false;
 		}
 	}
 

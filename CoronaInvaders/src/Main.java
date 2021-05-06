@@ -96,12 +96,13 @@ public class Main extends JPanel implements KeyListener {
 			if (gegner.get(i).getHealth() <= 0)
 				gegner.remove(i);
 		}
-		repaint();
 
 		if (gameOver) {
 			// game over screen
 			System.out.println("Game over!");
 		}
+
+		repaint();
 	}
 
 	@Override
@@ -109,8 +110,11 @@ public class Main extends JPanel implements KeyListener {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		player.renderChar(g2d);
-		for (Enemy enemy : gegner)
-			enemy.renderChar(g2d);
+		for (int i = 0; i < gegner.size(); i++) {
+			if (gegner.get(i) != null)
+				gegner.get(i).renderChar(g2d);
+		}
+
 	}
 
 	public void createEnemies(int numberOfEnemies) {

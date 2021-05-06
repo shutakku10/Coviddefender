@@ -113,7 +113,7 @@ public class Player {
 
 	public void fire() {
 		if (System.currentTimeMillis() - lastShotTimestamp > fireCooldownMillis) {
-			schussList.add(new Schuss(xPos));
+			schussList.add(new Schuss(xPos + width / 4));
 			lastShotTimestamp = System.currentTimeMillis();
 		}
 	}

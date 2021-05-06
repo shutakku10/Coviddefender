@@ -16,7 +16,10 @@ public class Enemy {
 	private int xPos, yPos;
 	public static final int ENEMY_WIDTH = 50;
 	public static final int ENEMY_HEIGHT = 50;
-	private int speed = 1;
+	private int nextDirChange = 500;
+	private long lastDirChange = 500;
+	private int speedX = 1;
+	private int speedY = 1;
 	private int health = 1;
 	private int damage = 10;
 
@@ -30,6 +33,9 @@ public class Enemy {
 
 		xPos = pXPos;
 		yPos = pYPos;
+
+		if (rnd.nextBoolean())
+			speedX *= -1;
 	}
 
 	public Point getLocation() {
@@ -71,13 +77,32 @@ public class Enemy {
 	}
 
 	public void moveEnemy() {
-		yPos += speed;
+		if (System.currentTimeMillis() - lastDirChange > nextDirChange) {
+			speedX *= -1;
+			lastDirChange = System.currentTimeMillis();
+			nextDirChange = rnd.nextInt(3000) + 500;
+		}
+
+		if (xPos + ENEMY_WIDTH - 25 > Main.FRAME_WIDTH) {
+			xPos = Main.FRAME_WIDTH - ENEMY_WIDTH;
+			speedX *= -1;
+		} else if (xPos < 0) {
+			xPos = 0;
+			speedX *= -1;
+		}
+
+		xPos += speedX;
+		yPos += speedY;
+	}
+
+	public void moveEnemyErik() {
+		yPos += speedY;
 		if (rnd.nextInt(2) == 0) {
 			if (xPos + ENEMY_WIDTH - 25 < Main.FRAME_WIDTH)
-				xPos += speed * 4;
+				xPos += speedX * 4;
 		} else {
 			if (xPos > 0)
-				xPos -= speed * 4;
+				xPos -= speedX * 4;
 		}
 	}
 }

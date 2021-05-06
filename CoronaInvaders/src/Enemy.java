@@ -12,14 +12,13 @@ import javax.imageio.ImageIO;
 public class Enemy {
 
 	private Random rnd = new Random();
-
 	private Image img;
 	private int xPos, yPos;
 	public static final int ENEMY_WIDTH = 50;
 	public static final int ENEMY_HEIGHT = 50;
 	private int speed = 1;
 	private int health = 1;
-	private int damage;
+	private int damage = 10;
 
 	public Enemy(int pXPos, int pYPos) {
 		try {
@@ -35,6 +34,18 @@ public class Enemy {
 
 	public Point getLocation() {
 		return new Point(xPos, yPos);
+	}
+
+	public boolean untenAngekommen() {
+		if (yPos + ENEMY_HEIGHT >= Main.FRAME_HEIGHT) {
+			health = 0;
+			return true;
+		} else
+			return false;
+	}
+
+	public int getHealth() {
+		return health;
 	}
 
 	public int getXpos() {

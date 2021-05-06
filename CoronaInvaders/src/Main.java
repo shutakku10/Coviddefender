@@ -6,7 +6,6 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -15,12 +14,12 @@ import javax.swing.WindowConstants;
 
 public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
-	Player player = new Player(this);
-	ArrayList<Enemy> gegner = new ArrayList<Enemy>();
-	
-	Long startTime;
-	Long elapsedTime;
-	
+	private Player player = new Player(this);
+	private ArrayList<Enemy> gegner = new ArrayList<Enemy>();
+
+	private Long startTime = System.currentTimeMillis();
+	private Long elapsedTime;
+
 	boolean rechts = false;
 	boolean links = false;
 	boolean fire = false;
@@ -50,12 +49,11 @@ public class Main extends JPanel implements KeyListener {
 		fenster.addKeyListener(this);
 		fenster.setVisible(true);
 		fenster.add(this);
-		t.start();
 		setBackground(Color.white);
 
 		// Enemy erstellung
 		createEnemies(10);
-
+		t.start();
 	} // end of public Main
 
 	// Anfang Methoden
@@ -76,15 +74,28 @@ public class Main extends JPanel implements KeyListener {
 
 		if (fire)
 			player.fire();
-		for (Enemy enemy : gegner) 
+
+		for (Enemy enemy : gegner) {
 			enemy.moveEnemy();
-		//Time since last enemy creation
-		elapsedTime = new Date().getTime() - startTime;
-		if(elapsedTime > 10*1000) { //if it's been 30 seconds
+			if (enemy.untenAngekommen())
+				player.getDamaged(enemy.getDamage());
+		}
+
+		// Time since last enemy creation
+		elapsedTime = System.currentTimeMillis() - startTime;
+
+		if (gegner.size() == 0)
+			createEnemies(10);
+
+		if (elapsedTime > 10 * 1000) { // if it's been 30 seconds
 			createEnemies(10);
 		}
-		
+
 		player.update();
+		for (int i = 0; i < gegner.size(); i++) {
+			if (gegner.get(i).getHealth() <= 0)
+				gegner.remove(i);
+		}
 		repaint();
 
 		if (gameOver) {
@@ -109,10 +120,10 @@ public class Main extends JPanel implements KeyListener {
 
 			gegner.add(new Enemy(xPos, yPos));
 		}
-		//Time when last enemies created
+		// Time when last enemies created
 		startTime = System.currentTimeMillis();
 	}
-	
+
 	class Loop implements Runnable {
 		long timestamp = 0;
 		long oldTimestamp = 0;

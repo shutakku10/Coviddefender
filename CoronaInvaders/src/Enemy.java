@@ -1,3 +1,5 @@
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -20,10 +22,13 @@ public class Enemy {
 	private long lastDirChange = 500;
 	private int speedX = 1;
 	private int speedY = 1;
-	private int health = 1;
+	private int maxHealth = 1, health = maxHealth;
 	private int damage = 10;
+	
+	private boolean bossEnemy;
 
-	public Enemy(int pXPos, int pYPos, boolean bossEnemy) {
+	public Enemy(int pXPos, int pYPos, boolean pBossEnemy) {
+		this.bossEnemy = pBossEnemy;
 		if(!bossEnemy) {
 			try {
 				img = ImageIO.read(new File("res/virus.png"));
@@ -32,9 +37,11 @@ public class Enemy {
 				e.printStackTrace();
 			}
 		} else {
-			health = 30;
+			maxHealth = 30;
 			damage = 999;
 			speedX = 2;
+			
+			health = maxHealth;
 			try {
 				img = ImageIO.read(new File("res/bossvirus.png"));
 				img = img.getScaledInstance(ENEMY_WIDTH, ENEMY_HEIGHT, Image.SCALE_SMOOTH);
@@ -86,6 +93,25 @@ public class Enemy {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.drawImage(img, xPos, yPos, null);
+		
+		if(bossEnemy) {
+			
+			BasicStroke stroke = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+			g2d.setStroke(stroke);
+			g2d.setColor(Color.black);
+			int barSizeX = 50;
+			g2d.drawRect(xPos + 8, yPos - 20, barSizeX, 10);
+			double obereGrenze = maxHealth * 2 / 3;
+			double unterGrenze = maxHealth * 1 / 3;
+			if (health >= obereGrenze)
+				g2d.setColor(Color.green);
+			else if (health >= unterGrenze) // farbliche Einstufung der Lebensanzeige
+				g2d.setColor(Color.yellow);
+			else if (health <= unterGrenze)
+				g2d.setColor(Color.red);
+			double tempHealth = health;
+			g2d.fillRect(xPos + 9, yPos - 19, (int) ((tempHealth / maxHealth) * barSizeX - 1), 9);
+		}
 	}
 
 	public void moveEnemy() {

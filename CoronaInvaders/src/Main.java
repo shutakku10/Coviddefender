@@ -14,7 +14,6 @@ import javax.swing.WindowConstants;
 public class Main extends JPanel implements KeyListener {
 	// Anfang Attribute
 	Player player = new Player();
-//	gegner gegner1 = new gegner(250, 200);
 	Enemy[] gegner = new Enemy[9];
 	boolean rechts = false;
 	boolean links = false;
@@ -48,13 +47,13 @@ public class Main extends JPanel implements KeyListener {
 		t.start();
 		setBackground(Color.white);
 
-//		// gegner erstellung
-//		for (int i = 0; i < gegner.length; i++) {
-//			int xPos = rnd.nextInt(FRAME_WIDTH);
-//			int yPos = rnd.nextInt(FRAME_HEIGHT / 2);
-//
-//			gegner[i] = new gegner(xPos, yPos);
-//		}
+		//Enemy erstellung
+		for(int i = 0; i < gegner.length; i++) {
+			int xPos = rnd.nextInt(FRAME_WIDTH-Enemy.ENEMY_WIDTH);
+			int yPos = rnd.nextInt(FRAME_HEIGHT/4-Enemy.ENEMY_HEIGHT)+Enemy.ENEMY_HEIGHT;
+					
+			gegner[i] = new Enemy(xPos, yPos);
+		}
 
 	} // end of public Main
 
@@ -72,8 +71,8 @@ public class Main extends JPanel implements KeyListener {
 
 		if (fire)
 			player.fire();
-//		for (Enemy enemy : gegner)
-//			enemy.moveEnemy();
+		for (Enemy enemy : gegner)
+			enemy.moveEnemy();
 
 		player.update();
 		repaint();
@@ -89,9 +88,8 @@ public class Main extends JPanel implements KeyListener {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		player.renderChar(g2d);
-//		for (Enemy enemy : gegner)
-//			enemy.renderChar(g2d);
-
+		for (Enemy enemy : gegner) 
+			enemy.renderChar(g2d);
 	}
 
 	class Loop implements Runnable {
